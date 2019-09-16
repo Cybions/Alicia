@@ -24,7 +24,7 @@ public class PlayerController : MonoBehaviour
         forward = Input.GetAxis("Horizontal");
         left = Input.GetAxis("Vertical");
         float currentSpeedReduction = speedReduction;
-        if (Input.GetKey(KeyCode.LeftShift)) { currentSpeedReduction = currentSpeedReduction / 3; }
+        if (Input.GetKey(KeyCode.LeftShift)) { currentSpeedReduction = currentSpeedReduction / 2; }
         transform.Translate(new Vector3(forward / currentSpeedReduction, 0, left / currentSpeedReduction));
     }
 
@@ -35,7 +35,6 @@ public class PlayerController : MonoBehaviour
             Vector3 origin = new Vector3(transform.position.x, transform.position.y, transform.position.z);
             yield return new WaitForSeconds(1.0f);
             float distance = Vector3.Distance(origin, transform.position);
-            print(distance + "m/s");
         }
     }
 
