@@ -7,6 +7,9 @@ public class PlayerController : MonoBehaviour
     private float horizontal, vertical, forward, left;
     public float mouseSensitivity = 3f, speedReduction;
     public Camera cam;
+    public Transform arms;
+    public bool isMoving = false;
+    public bool isSprinting = false;
 
     void Start()
     {
@@ -21,11 +24,13 @@ public class PlayerController : MonoBehaviour
         vertical = Mathf.Clamp(vertical, -80, 80);
         transform.localRotation = Quaternion.Euler(0, horizontal, 0);
         cam.transform.localRotation = Quaternion.Euler(vertical, 0, 0);
+        arms.transform.localRotation = Quaternion.Euler(vertical, 0, 0);
         forward = Input.GetAxis("Horizontal");
         left = Input.GetAxis("Vertical");
         float currentSpeedReduction = speedReduction;
-        if (Input.GetKey(KeyCode.LeftShift)) { currentSpeedReduction = currentSpeedReduction / 2; }
+        if (Input.GetKey(KeyCode.LeftShift)) { currentSpeedReduction = currentSpeedReduction / 2; isSprinting = true; } else { isSprinting = false; }
         transform.Translate(new Vector3(forward / currentSpeedReduction, 0, left / currentSpeedReduction));
+        if(forward == 0 && left == 0) { isMoving = false; } else { isMoving = true; }
     }
 
     IEnumerator GetSpeed()
