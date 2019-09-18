@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+using DG.Tweening;
 
 public class HUDManager : MonoBehaviour
 {
@@ -17,7 +19,23 @@ public class HUDManager : MonoBehaviour
     private Sprite ReticuleFree;
     [SerializeField]
     private Color FreeColor;
-    private bool CurrentReticuleIsFocused = false;
+    [SerializeField]
+    private Sprite ReticuleInteract;
+    [SerializeField]
+    private Color InteractColor;
+    [SerializeField]
+    private TextMeshProUGUI InteractIndice;
+
+    private Tweener ReticuleAnimation;
+
+    public enum ReticuleState
+    {
+        Focused,
+        Free,
+        Interact
+    }
+
+    private ReticuleState currentReticuleState = ReticuleState.Focused;
 
     [SerializeField]
     private Image Spell;
@@ -26,27 +44,49 @@ public class HUDManager : MonoBehaviour
     void Start()
     {
         Instance = this;
-        ChangeReticule(false);
+        ChangeReticule(ReticuleState.Free);
+
     }
 
-    public void ChangeReticule(bool isFocused)
+    public void ChangeReticule(ReticuleState NewState)
     {
-        if(CurrentReticuleIsFocused == isFocused) { return; }
-        if (isFocused)
+        if(currentReticuleState == NewState) { return; }
+        switch (NewState)
         {
-            Reticule.sprite = ReticuleFocused;
-            Reticule.color = FocusedColor;
+            case (ReticuleState.Focused):
+                Reticule.sprite = ReticuleFocused;
+                Reticule.color = FocusedColor;
+                InteractIndice.color = Color.clear;
+                ResetReticule();
+                break;
+            case (ReticuleState.Free):
+                Reticule.sprite = ReticuleFree;
+                Reticule.color = FreeColor;
+                InteractIndice.color = Color.clear;
+                ResetReticule();
+                break;
+            case (ReticuleState.Interact):
+                Reticule.sprite = ReticuleInteract;
+                Reticule.color = InteractColor;
+                InteractIndice.text = "E";
+                InteractIndice.color = InteractColor;
+                ReticuleAnimation = rotateReticule();
+                break;
         }
-        else
-        {
-            Reticule.sprite = ReticuleFree;
-            Reticule.color = FreeColor;
-        }
-        CurrentReticuleIsFocused = isFocused;
+        currentReticuleState = NewState;
     }
 
     public void ChangeSpell(Sprite SpellSprite)
     {
         Spell.sprite = SpellSprite;
+    }
+
+    private Tweener rotateReticule()
+    {
+        return Reticule.transform.DORotate(new Vector3(0, 0, Reticule.transform.rotation.z + 90), .25f).SetEase(Ease.Linear);
+    }
+    private void ResetReticule()
+    {
+        Reticule.transform.DORotate(new Vector3(0, 0, Reticule.transform.rotation.z - 90), 0f);
     }
 }
