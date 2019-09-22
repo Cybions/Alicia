@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController Instance;
     private float horizontal, vertical, forward, left;
     public float mouseSensitivity = 3f, speedReduction;
     public Camera cam;
@@ -11,8 +12,11 @@ public class PlayerController : MonoBehaviour
     public bool isMoving = false;
     public bool isSprinting = false;
 
+    public InteractionTarget interact_target = null;
+
     void Start()
     {
+        Instance = this;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         StartCoroutine(GetSpeed());
@@ -31,6 +35,12 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftShift)) { currentSpeedReduction = currentSpeedReduction / 2; isSprinting = true; } else { isSprinting = false; }
         transform.Translate(new Vector3(forward / currentSpeedReduction, 0, left / currentSpeedReduction));
         if(forward == 0 && left == 0) { isMoving = false; } else { isMoving = true; }
+        if(Input.GetKey(KeyCode.E) && interact_target != null) { interact_target.Interact(); }
+    }
+
+    public void CanInteract(InteractionTarget newtar)
+    {
+        interact_target = newtar;
     }
 
     IEnumerator GetSpeed()
