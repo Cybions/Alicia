@@ -19,6 +19,19 @@ public class MovableItem : MonoBehaviour
     private Ease ease;
     private bool CanMove = true;
     private bool FirstMove = true;
+    private Vector3 VectorOrigin;
+
+    private void Start()
+    {
+
+        VectorOrigin = this.transform.position;
+        if(typeOfMovement == TypeOfMovement.rotation)
+        {
+            VectorOrigin = new Vector3(this.transform.rotation.x, this.transform.rotation.y, this.transform.rotation.z);
+        }
+        vectorMovement = VectorOrigin + vectorMovement;
+    }
+
     public void StartMovement()
     {
         if (!CanMove) { return; }
@@ -26,10 +39,10 @@ public class MovableItem : MonoBehaviour
         switch (typeOfMovement)
         {
             case TypeOfMovement.rotation:
-                transform.DORotate(checkDestination() + new Vector3(transform.rotation.x, transform.rotation.y, transform.rotation.z), duration).SetEase(ease).OnComplete(delegate { CanMove = true; });
+                transform.DORotate(checkDestination(), duration).SetEase(ease).OnComplete(delegate { CanMove = true; });
                 break;
             case TypeOfMovement.displacement:
-                transform.DOMove(checkDestination() + transform.position, duration).SetEase(ease).OnComplete(delegate { CanMove = true; });
+                transform.DOMove(checkDestination(), duration).SetEase(ease).OnComplete(delegate { CanMove = true; });
                 break;
         }
         FirstMove = !FirstMove;
@@ -37,6 +50,6 @@ public class MovableItem : MonoBehaviour
     private Vector3 checkDestination()
     {
         if (FirstMove) { return vectorMovement; }
-        return vectorMovement * -1;
+        return VectorOrigin;
     }
 }
